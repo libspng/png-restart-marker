@@ -138,7 +138,7 @@ A PNG decoder determines the segments offsets by scanning forward in the IDAT st
 * Encoding with restart markers will increase file size,
 it should be used in cases where the relative size increase is negligible.
 * The number of restart markers affect the overall size increase,
-one marker (two segments) will double encoding and decoding speed.
+in general one marker (two segments) will double encoding and decoding speed.
 
 ## Security Considerations
 
