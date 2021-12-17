@@ -76,7 +76,7 @@ If present, the `mARK` chunk shall appear only once before the first IDAT chunk.
 
 ### Default segmentation method
 
-Given `N` segments the image is divided equally into `N` horizontal segments,
+Given segment count `N` the image is divided equally into `N` horizontal segments,
 if the image height is not evenly divisible the first segment shall be taller by the remainder of the division.
 
 Image data for each segment shall decompress independently of preceding image data.
