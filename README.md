@@ -150,6 +150,9 @@ in general one marker (two segments) will double encoding and decoding speed.
 
 A PNG encoder or decoder conforms to this specification if it satisfies the following conditions.
 
+Note this is an early specification and implementations are free to support only one segmentation type,
+the goal is to have a debate on which type should be required for the final version.
+
 ### Conformance of PNG encoders
 
 * It does not write a `mARK` chunk or attempt to segment the image if the interlace method is not 0.
