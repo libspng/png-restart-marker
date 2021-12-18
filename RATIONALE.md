@@ -1,5 +1,12 @@
 # Rationale
 
+## Why the name?
+
+It is inspired by the JPEG feature of the same name,
+also used to enable parallel processing.
+The name is meant to be self-explanatory to advanced users who
+are already familiar with the term "restart marker".
+
 ## Why two kinds of segmentation types?
 
 One may be easier to implement than the other, depending on which existing PNG library is used.
@@ -34,3 +41,50 @@ if the extra data is ignored single-threaded decoders may get a different final 
 therefore it is not safe to ignore and should be treated as a recoverable error.
 
 The last segment is excluded from the rule because it can be safely ignored.
+
+## Why are interlaced images not supported?
+
+Interlaced images are typically used where bandwidth is limited
+and parallel decoding is not possible, due to its very limited
+use cases it was deemed not worth the added complexity. 
+
+It is not practical to support interlaced images, deinterlacing would require
+locks to prevent concurrent reads and writes to the same row.
+
+Ignoring some corner cases with extremely small images
+it is possible to split an interlaced image into two segments,
+because the last pass is always the bottom half the image,
+which is technically not interlaced.
+
+If an interlaced image were to be split into two segments
+the default segmentation method would calculate the size of the bottom half
+to the same dimensions and allow parallel decoding with deinterlacing,
+this is the only known feasible use case.
+
+## Why a segment count entry?
+
+Although it is possible for the number of `Offset` entries to be derived from the
+length of the chunk as is done for some of the standard PNG chunks
+it would be awkward for segmentation type 1 to use dummy `Offset`'s to signal the same.
+
+If segmentation type 1 were to be dropped from a future version then the segment count
+entry would also be removed.
+
+## Why restrict the filter types for the first scanline?
+
+To guarantee predictable performance and memory usage,
+the restrictions also limit complexity, reducing the attack surface of the decoder.
+
+A decoder with optimal memory usage holds two scanlines in memory for defiltering,
+usually the processed image rows go into an application-managed buffer.
+Aside from a few, small and fixed-size buffers no additional memory is allocated.
+
+If segments were allowed to reference the previous segment's last scanline then
+a simple parallel decoder would have to wait for the previous segment to finish,
+defeating the purpose of parallel decoding.
+Not only would decompression have to finish on the previous segment but defiltering too,
+defiltering would require the previous scanline to be defiltered first.
+
+Although it is possible to allocate more memory to buffer the uncompressed segment
+it would mean additional complexity for most implementations which is undesirable for decoders and
+worker threads would still have to wait for defiltering to finish on the previous segment.
