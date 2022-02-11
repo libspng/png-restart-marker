@@ -53,8 +53,7 @@ locks to prevent concurrent reads and writes to the same row.
 
 Ignoring some corner cases with extremely small images
 it is possible to split an interlaced image into two segments,
-because the last pass is always the bottom half the image,
-which is technically not interlaced.
+because the last pass is a collection of full-width rows.
 
 If an interlaced image were to be split into two segments
 the default segmentation method would calculate the size of the bottom half
